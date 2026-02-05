@@ -27,38 +27,38 @@ namespace Physiocure.API.Controllers
         // ✅ REGISTER (Client Only)
         // ==========================
         [HttpPost("register")]
-public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-{
-    if (string.IsNullOrWhiteSpace(dto.FullName) ||
-        string.IsNullOrWhiteSpace(dto.Email) ||
-        string.IsNullOrWhiteSpace(dto.Mobile) ||
-        string.IsNullOrWhiteSpace(dto.Password))
-    {
-        return BadRequest(new { message = "All fields are required" });
-    }
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.FullName) ||
+                string.IsNullOrWhiteSpace(dto.Email) ||
+                string.IsNullOrWhiteSpace(dto.Mobile) ||
+                string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return BadRequest(new { message = "All fields are required" });
+            }
 
-    var emailExists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
-    if (emailExists)
-        return BadRequest(new { message = "Email already registered" });
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
+            if (emailExists)
+                return BadRequest(new { message = "Email already registered" });
 
-    var mobileExists = await _context.Users.AnyAsync(u => u.Mobile == dto.Mobile);
-    if (mobileExists)
-        return BadRequest(new { message = "Mobile already registered" });
+            var mobileExists = await _context.Users.AnyAsync(u => u.Mobile == dto.Mobile);
+            if (mobileExists)
+                return BadRequest(new { message = "Mobile already registered" });
 
-    var user = new User
-    {
-        FullName = dto.FullName,
-        Email = dto.Email,
-        Mobile = dto.Mobile,
-        Password = dto.Password,
-        Role = "Client"
-    };
+            var user = new User
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                Mobile = dto.Mobile,
+                Password = dto.Password,
+                Role = "Client"
+            };
 
-    _context.Users.Add(user);
-    await _context.SaveChangesAsync();
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
-    return Ok(new { message = "Registration successful" });
-}
+            return Ok(new { message = "Registration successful" });
+        }
 
         // ==========================
         // ✅ LOGIN (Client + Admin)
@@ -109,13 +109,14 @@ public async Task<IActionResult> Register([FromBody] RegisterDto dto)
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            // ✅ FIX: Null-safe claims to prevent 500 error
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.MobilePhone, user.Mobile),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Name, user.FullName ?? ""),
+                new Claim(ClaimTypes.Email, user.Email ?? ""),
+                new Claim(ClaimTypes.MobilePhone, user.Mobile ?? ""),
+                new Claim(ClaimTypes.Role, user.Role ?? "Client")
             };
 
             var token = new JwtSecurityToken(

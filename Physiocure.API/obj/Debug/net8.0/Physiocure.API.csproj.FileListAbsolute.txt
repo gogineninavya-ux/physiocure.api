@@ -121,6 +121,7 @@ C:\Users\dell\Desktop\PhysiocureDotNetAPI\Physiocure.API\obj\Debug\net8.0\Physio
 C:\Users\dell\Desktop\PhysiocureDotNetAPI\Physiocure.API\obj\Debug\net8.0\Physiocure.API.csproj.CoreCompileInputs.cache
 C:\Users\dell\Desktop\PhysiocureDotNetAPI\Physiocure.API\obj\Debug\net8.0\Physiocure.API.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\dell\Desktop\PhysiocureDotNetAPI\Physiocure.API\obj\Debug\net8.0\Physiocure.API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\dell\Desktop\PhysiocureDotNetAPI\Physiocure.API\obj\Debug\net8.0\Physiocure.API.sourcelink.json
 C:\Users\dell\Desktop\PhysiocureDotNetAPI\Physiocure.API\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\dell\Desktop\PhysiocureDotNetAPI\Physiocure.API\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\dell\Desktop\PhysiocureDotNetAPI\Physiocure.API\obj\Debug\net8.0\staticwebassets\msbuild.Physiocure.API.Microsoft.AspNetCore.StaticWebAssets.props

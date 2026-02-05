@@ -2,11 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Physiocure.API.Data;
 using Physiocure.API.Models;
-using Physiocure.API.Dtos;
 
 namespace Physiocure.API.Controllers
 {
-    [Route("api/admin")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AdminAuthController : ControllerBase
     {
@@ -17,32 +16,32 @@ namespace Physiocure.API.Controllers
             _context = context;
         }
 
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword(AdminForgotPasswordDto dto)
+        // ✅ TEST
+        [HttpGet("test")]
+        public IActionResult Test()
         {
-            var admin = await _context.Admins
-                .FirstOrDefaultAsync(a => a.Mobile == dto.Mobile);
-
-            if (admin == null)
-                return NotFound(new { message = "Admin mobile not found" });
-
-            admin.Password = dto.NewPassword;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Password updated successfully" });
+            return Ok("AdminAuth Working");
         }
 
+        // ✅ LOGIN
         [HttpPost("login")]
         public async Task<IActionResult> Login(AdminLoginDto dto)
         {
             var admin = await _context.Admins
-                .FirstOrDefaultAsync(a => a.Mobile == dto.Mobile && a.Password == dto.Password);
+                .FirstOrDefaultAsync(a => a.Email == dto.Email && a.Password == dto.Password);
 
             if (admin == null)
-                return Unauthorized(new { message = "Invalid mobile or password" });
+            {
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
 
-            return Ok(new { message = "Admin login success", adminId = admin.Id });
+            return Ok(new
+            {
+                message = "Admin login success",
+                adminId = admin.Id,
+                adminName = admin.Name,
+                adminEmail = admin.Email
+            });
         }
     }
 }
