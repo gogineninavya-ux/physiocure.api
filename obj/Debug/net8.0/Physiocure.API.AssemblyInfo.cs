@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Physiocure.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+de407fc66923179e007db1ce3352df8cda298960")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+18b3c3dd6accec69b4b625f9d185aec8c33abd23")]
 [assembly: System.Reflection.AssemblyProductAttribute("Physiocure.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Physiocure.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -122,17 +122,8 @@ public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto dto)
     var email = payload.Email;
     var name = payload.Name;
 
-    // ✅ Admin emails list
-    var adminEmails = new List<string>
-    {
-        "gogineninavya@gmail.com",
-        "physiocureadmin@gmail.com"
-    };
-
-    // check if user exists
     var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-    // if not exists, create new user
     if (user == null)
     {
         user = new User
@@ -141,17 +132,10 @@ public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto dto)
             Email = email,
             Mobile = "",
             Password = "",
-            Role = adminEmails.Contains(email) ? "Admin" : "Client"
+            Role = "Client"   // default
         };
 
         _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-    }
-
-    // ✅ if user exists and is admin email, update role
-    if (adminEmails.Contains(email) && user.Role != "Admin")
-    {
-        user.Role = "Admin";
         await _context.SaveChangesAsync();
     }
 
@@ -171,6 +155,27 @@ public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto dto)
         }
     });
 }
+[HttpPost("send-reset-otp")]
+public IActionResult SendResetOtp([FromBody] ClientForgotPasswordDto dto)
+{
+    // find client by Email and send otp
+    return Ok();
+}
+
+[HttpPost("verify-reset-otp")]
+public IActionResult VerifyResetOtp([FromBody] ClientVerifyOtpDto dto)
+{
+    // verify otp
+    return Ok();
+}
+
+[HttpPost("reset-password")]
+public IActionResult ResetPassword([FromBody] ClientResetPasswordDto dto)
+{
+    // update password
+    return Ok();
+}
+
 
 [Authorize]
 [HttpGet("me")]
