@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\physiocure.api\\Physiocure.API.csproj": {}
+    "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\Physiocure.API\\Physiocure.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\physiocure.api\\Physiocure.API.csproj": {
+    "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\Physiocure.API\\Physiocure.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\physiocure.api\\Physiocure.API.csproj",
+        "projectUniqueName": "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\Physiocure.API\\Physiocure.API.csproj",
         "projectName": "Physiocure.API",
-        "projectPath": "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\physiocure.api\\Physiocure.API.csproj",
+        "projectPath": "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\Physiocure.API\\Physiocure.API.csproj",
         "packagesPath": "C:\\Users\\dell\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\physiocure.api\\obj\\",
+        "outputPath": "C:\\Users\\dell\\Desktop\\PhysiocureDotNetAPI\\Physiocure.API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\dell\\AppData\\Roaming\\NuGet\\NuGet.Config"
