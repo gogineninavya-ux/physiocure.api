@@ -7,6 +7,8 @@ using Physiocure.API.Dtos;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Physiocure.API.Controllers
 {
@@ -96,6 +98,106 @@ namespace Physiocure.API.Controllers
                 }
             });
         }
+[HttpPost("google-login")]
+public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto dto)
+{
+    if (dto == null || string.IsNullOrEmpty(dto.Token))
+        return BadRequest(new { message = "Google token required" });
+
+    GoogleJsonWebSignature.Payload payload;
+
+    try
+    {
+        payload = await GoogleJsonWebSignature.ValidateAsync(dto.Token,
+            new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new[] { _config["GoogleAuth:ClientId"] }
+            });
+    }
+    catch
+    {
+        return Unauthorized(new { message = "Invalid Google Token" });
+    }
+
+    var email = payload.Email;
+    var name = payload.Name;
+
+    // ✅ Admin emails list
+    var adminEmails = new List<string>
+    {
+        "gogineninavya@gmail.com",
+        "physiocureadmin@gmail.com"
+    };
+
+    // check if user exists
+    var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+    // if not exists, create new user
+    if (user == null)
+    {
+        user = new User
+        {
+            FullName = name,
+            Email = email,
+            Mobile = "",
+            Password = "",
+            Role = adminEmails.Contains(email) ? "Admin" : "Client"
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+    }
+
+    // ✅ if user exists and is admin email, update role
+    if (adminEmails.Contains(email) && user.Role != "Admin")
+    {
+        user.Role = "Admin";
+        await _context.SaveChangesAsync();
+    }
+
+    var token = GenerateJwtToken(user);
+
+    return Ok(new
+    {
+        message = "Google login successful",
+        token = token,
+        user = new
+        {
+            user.Id,
+            user.FullName,
+            user.Email,
+            user.Mobile,
+            user.Role
+        }
+    });
+}
+
+[Authorize]
+[HttpGet("me")]
+public async Task<IActionResult> GetMyProfile()
+{
+    var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    if (string.IsNullOrEmpty(userIdClaim))
+        return Unauthorized(new { message = "Invalid Token" });
+
+    int userId = int.Parse(userIdClaim);
+
+    var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+    if (user == null)
+        return NotFound(new { message = "User not found" });
+
+    return Ok(new
+    {
+        user.Id,
+        user.FullName,
+        user.Email,
+        user.Mobile,
+        user.Role
+    });
+}
+
 
         // ==========================
         // ✅ JWT Token Generator

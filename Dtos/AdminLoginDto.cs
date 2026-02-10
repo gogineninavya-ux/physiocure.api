@@ -1,8 +1,8 @@
-namespace Physiocure.API.Models
+namespace Physiocure.API.Dtos
 {
     public class AdminLoginDto
     {
-        public string Email { get; set; } = string.Empty;   // ✅ ADD THIS
+        public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
 }
