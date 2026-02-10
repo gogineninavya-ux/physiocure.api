@@ -17,9 +17,14 @@ namespace Physiocure.API.Controllers
                 Name = "Dr. Rajesh Kumar",
                 Speciality = "Orthopedic",
                 HospitalName = "Apollo Hospital",
+                WorkingType = "Hospital",
+                Address = "M.G Road, Vijayawada",
+                District = "Krishna",
+                State = "Andhra Pradesh",
+                RadiusKm = 10,
                 Experience = "10 Years",
                 ImageUrl = "https://via.placeholder.com/150",
-                Fee = "500"
+                Fee = 500
             },
             new Doctor
             {
@@ -27,17 +32,46 @@ namespace Physiocure.API.Controllers
                 Name = "Dr. Priya Sharma",
                 Speciality = "Physiotherapist",
                 HospitalName = "Fortis Hospital",
+                WorkingType = "HOospital",
+                Address = "Ring Road, Guntur",
+                District = "Guntur",
+                State = "Andhra Pradesh",
+                RadiusKm = 20,
                 Experience = "7 Years",
                 ImageUrl = "https://via.placeholder.com/150",
-                Fee = "400"
+                Fee = 400
             }
         };
 
-        // GET: api/Doctor
+        // ✅ GET: api/Doctor?district=Krishna&radius=10&workingType=Clinic
         [HttpGet]
-        public IActionResult GetDoctors()
+        public IActionResult GetDoctors(
+            [FromQuery] string? district,
+            [FromQuery] int? radius,
+            [FromQuery] string? workingType
+        )
         {
-            return Ok(doctors);
+            var result = doctors.AsQueryable();
+
+            // Andhra Pradesh only
+            result = result.Where(d => d.State.ToLower() == "andhra pradesh");
+
+            if (!string.IsNullOrEmpty(district))
+            {
+                result = result.Where(d => d.District.ToLower() == district.ToLower());
+            }
+
+            if (radius.HasValue)
+            {
+                result = result.Where(d => d.RadiusKm <= radius.Value);
+            }
+
+            if (!string.IsNullOrEmpty(workingType))
+            {
+                result = result.Where(d => d.WorkingType.ToLower() == workingType.ToLower());
+            }
+
+            return Ok(result.ToList());
         }
 
         // GET: api/Doctor/1
@@ -60,6 +94,10 @@ namespace Physiocure.API.Controllers
                 return BadRequest(new { message = "Doctor data is required" });
 
             doctor.Id = doctors.Count + 1;
+
+            if (string.IsNullOrEmpty(doctor.State))
+                doctor.State = "Andhra Pradesh";
+
             doctors.Add(doctor);
 
             return Ok(new { message = "Doctor added successfully", doctor });

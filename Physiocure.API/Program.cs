@@ -7,64 +7,69 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ================================
+// ✅ Add Controllers
+// ================================
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 
-// ✅ SQL Server DB Connection
+// ================================
+// ✅ Database Connection (SQL Server)
+// ================================
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// ✅ CORS for Angular
+// ================================
+// ✅ CORS (Angular Support)
+// ================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
     });
 });
 
-// ✅ JWT Config (Fixed)
+// ================================
+// ✅ JWT Key (Null safe)
+// ================================
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new Exception("Jwt:Key is missing in appsettings.json");
 
-var jwtIssuer = builder.Configuration["Jwt:Issuer"]
-    ?? throw new Exception("Jwt:Issuer is missing in appsettings.json");
-
-var jwtAudience = builder.Configuration["Jwt:Audience"]
-    ?? throw new Exception("Jwt:Audience is missing in appsettings.json");
-
+// ================================
 // ✅ JWT Authentication
+// ================================
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
 
-        ValidIssuer = jwtIssuer,
-        ValidAudience = jwtAudience,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
 
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtKey)
-        ),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey)
+            )
+        };
+    });
 
-        ClockSkew = TimeSpan.Zero
-    };
-});
-
+// ================================
 // ✅ Swagger + JWT Support
+// ================================
+builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "PhysioCure API",
+        Title = "Physiocure API",
         Version = "v1"
     });
 
@@ -72,10 +77,10 @@ builder.Services.AddSwaggerGen(c =>
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
+        Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Enter token like: Bearer {token}"
+        Description = "Enter JWT Token like: Bearer {your token}"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -94,22 +99,27 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// ================================
+// ✅ Build App
+// ================================
 var app = builder.Build();
 
+// ================================
+// ✅ Swagger Middleware
+// ================================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
+// ================================
+// ✅ Middleware Order
+// ================================
+//app.UseHttpsRedirection();
 
-app.UseRouting();
-
-// ✅ Enable CORS before Authentication
 app.UseCors("AllowAngular");
 
-// ✅ JWT Middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
